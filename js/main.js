@@ -1,7 +1,7 @@
 const productList = document.getElementById("productList");
 const cartItemsElement = document.getElementById("cartItems");
 const cartTotalElement = document.getElementById("cartTotal");
-let cart =  [];
+let cart = JSON.parse(localStorage.getItem("cart")) || [];
 // Ürünler
 const products = [
     {
@@ -118,7 +118,6 @@ function addToCart(event) {
         }
     }
     saveToLocalStorage();
-
 }
 
 function renderCartsItems(){
@@ -144,7 +143,6 @@ function renderCartsItems(){
         <h2>$${item.price}</h2>
         <button class="remove-from-cart" data-id="${item.id}">Remove</button>
     </div>
-
     `
         )
         .join("");
@@ -154,10 +152,12 @@ saveToLocalStorage = () => {
     localStorage.setItem("cart", JSON.stringify(cart));
 }
 
-renderProducts();
+
 
 
 
 if(window.location.pathname.includes("cart.html")){
     renderCartsItems();
+}else{
+    renderProducts();
 }
