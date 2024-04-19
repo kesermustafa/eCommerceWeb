@@ -62,7 +62,7 @@ const products = [
     },
 ];
 
-
+// Ürünleri ekrana renderlayacak fonksiyon
 function renderProducts() {
     productList.innerHTML = products
         .map(
@@ -83,12 +83,11 @@ function renderProducts() {
         )
         .join("");
 
-        const addToCartButtons = document.getElementsByClassName('add-to-cart');
-
-        for(let i = 0; i < addToCartButtons.length; i++) {
-            const addToCartButton =  addToCartButtons[i];
-            addToCartButton.addEventListener("click", addToCart)
-        }
+    const addToCartButtons = document.getElementsByClassName("add-to-cart");
+    for (let i = 0; i < addToCartButtons.length; i++) {
+        const addToCartButton = addToCartButtons[i];
+        addToCartButton.addEventListener("click", addToCart);
+    }
 }
 
 
@@ -97,30 +96,40 @@ function renderProducts() {
 function addToCart(event) {
     // Sepete ekle butonuna tıkladığımızda sepete ekleyeceğimiz ürünün idsine erişme
     const productID = parseInt(event.target.dataset.id);
-
     // Dizinin içerisinden tıkladığımız idli elemanı bulmak için find methodunu kullandık
     const product = products.find((product) => product.id === productID);
 
     if (product) {
-        const  existingItem = cart.find(item => item.id === product.id);
+        // Sepette tıkladığımız ürün önceden var mı yok mu kontrol ederiz
+        const exixtingItem = cart.find((item) => item.id === productID);
+        // Sepette tıkladığımız ürün varsa bu ürünün miktarını bir arttırız
+        if (exixtingItem) {
+            exixtingItem.quantity++;
 
-        if (existingItem) {
-            existingItem.quantity++;
-        }else{
+        } else {
+            // Tıkladığımız ürün sepette yoksa yeni bir ürün şekilnde ekleriz
             const cartItem = {
                 id: product.id,
                 title: product.title,
                 price: product.price,
                 image: product.image,
                 quantity: 1,
-            }
-            cart.push(cartItem)
+            };
+            // Yeni oluşturduğumuz ürünü cart dizisine ekleriz.
+            cart.push(cartItem);
+
         }
     }
+    // toplam miktarı günceller
+
     saveToLocalStorage();
+    updateCartIcon();
+
 }
 
-function renderCartsItems(){
+
+function renderCartItems() {
+
     cartItemsElement.innerHTML = cart
         .map(
             (item) =>
@@ -143,21 +152,99 @@ function renderCartsItems(){
         <h2>$${item.price}</h2>
         <button class="remove-from-cart" data-id="${item.id}">Remove</button>
     </div>
+
     `
         )
         .join("");
+
+    const removeButtons = document.getElementsByClassName("remove-from-cart");
+    for (let i = 0; i < removeButtons.length; i++) {
+        const removeButton = removeButtons[i];
+        removeButton.addEventListener("click", removeFromCart);
+    }
+    const quantityInputs = document.getElementsByClassName("cart-item-quantity");
+
+    for (let i = 0; i < quantityInputs.length; i++) {
+        const quantityInput = quantityInputs[i];
+        quantityInput.addEventListener("change", changeQuantity);
+    }
+
+
 }
 
-saveToLocalStorage = () => {
+// Cart dizisinden ve localStoragedan silmek istediğimiz ürünü sildik ve sayfayı güncelledik
+function removeFromCart(event) {
+    const productID = parseInt(event.target.dataset.id);
+
+    // cart dizisinden silmek istediğimiz ürünü idsine göre cart dizisinden sildik
+    cart = cart.filter((item) => item.id !== productID);
+    // locatlStorage ı güncelledik
+    saveToLocalStorage();
+    // sayfatı güncelledik
+    renderCartItems();
+    // sepetteki toplam fiyatı günceller
+    calculateCartTotal();
+    // toplam miktarı günceller
+    updateCartIcon();
+}
+// Inputun içerisindeki miktar değişince çalışacak fonksiyon
+function changeQuantity(event) {
+    const productID = parseInt(event.target.dataset.id);
+    const quantity = parseInt(event.target.value);
+
+    if (quantity > 0) {
+        const cartItem = cart.find((item) => item.id === productID);
+        if (cartItem) {
+            cartItem.quantity = quantity;
+            saveToLocalStorage();
+            calculateCartTotal();
+            updateCartIcon();
+        }
+    }
+}
+
+// localStoragea veri eklemek için kullandık
+function saveToLocalStorage() {
     localStorage.setItem("cart", JSON.stringify(cart));
 }
 
 
-
-
-
-if(window.location.pathname.includes("cart.html")){
-    renderCartsItems();
-}else{
-    renderProducts();
+// sepetteki toplam fiyatı hesaplar
+function calculateCartTotal() {
+    // reduce iki değer ister, bunlardan birincisi içerisinde yapacağımız işlem, ikincisi ise başlangıç değeri
+    const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    cartTotalElement.textContent = `Total: $${total.toFixed(2)}`;
 }
+
+// Sayfa cart.html sayfasındaysa renderCartItems fonksiyonun çalışması gerekiyor
+if (window.location.pathname.includes("cart.html")) {
+    renderCartItems();
+    calculateCartTotal();
+    updateCartIcon()
+} else {
+    // Sayfa index.html sayfasındaysa renderProducts fonksiyonu çalışacak
+    renderProducts();
+    updateCartIcon()
+}
+
+
+
+function updateCartIcon() {
+    const cartIcon = document.getElementById("cart-icon-x");
+
+    const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
+
+    cartIcon.innerText = `${totalQuantity}`;
+
+}
+
+document.getElementById("clear-shopping").addEventListener("click", () => {
+    localStorage.clear();
+    renderCartItems();
+    calculateCartTotal();
+    updateCartIcon();
+    window.location.reload();
+})
+
+
+
