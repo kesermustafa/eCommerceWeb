@@ -1,7 +1,7 @@
 const productList = document.getElementById("productList");
 const cartItemsElement = document.getElementById("cartItems");
 const cartTotalElement = document.getElementById("cartTotal");
-let cart = JSON.parse(localStorage.getItem("cart")) || [];
+let cart =  [];
 // Ürünler
 const products = [
     {
@@ -89,11 +89,37 @@ function renderProducts() {
             const addToCartButton =  addToCartButtons[i];
             addToCartButton.addEventListener("click", addToCart)
         }
-
 }
 
-renderProducts()
 
+
+// Sepete Ekleme
 function addToCart(event) {
-    console.log(event)
+    // Sepete ekle butonuna tıkladığımızda sepete ekleyeceğimiz ürünün idsine erişme
+    const productID = parseInt(event.target.dataset.id);
+
+    // Dizinin içerisinden tıkladığımız idli elemanı bulmak için find methodunu kullandık
+    const product = products.find((product) => product.id === productID);
+
+    if (product) {
+        const  existingItem = cart.find(item => item.id === product.id);
+
+        if (existingItem) {
+            existingItem.quantity++;
+        }else{
+            const cartItem = {
+                id: product.id,
+                title: product.title,
+                price: product.price,
+                image: product.image,
+                quantity: 1,
+            }
+
+            cart.push(cartItem)
+
+        }
+    }
 }
+
+
+renderProducts();
