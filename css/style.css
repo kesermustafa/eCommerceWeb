@@ -7,6 +7,8 @@
     text-decoration: none;
     list-style: none;
     scroll-behavior: smooth;
+    overflow-x: hidden;
+
 }
 /* Variables */
 :root {
@@ -30,6 +32,7 @@ section {
     max-width: 1070px;
     margin: auto;
     width: 100%;
+    padding: 0 30px;
 }
 header {
     position: fixed;
@@ -43,8 +46,11 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 25px 0;
+    padding: 25px 20px;
 }
+
+
+
 #menu-icon {
     font-size: 28px;
     cursor: pointer;
@@ -72,15 +78,16 @@ header {
     font-size: 1.8rem;
     color: var(--main-color);
     cursor: pointer;
+    padding-right: 30px;
 }
-#cart-icon[data-quantity="0"]::after {
+/*#cart-icon[data-quantity="0"]::after {
     content: "";
-}
+}*/
 #cart-icon[data-quantity="0"]::after {
     content: attr(data-quantity);
     position: absolute;
     top: 0;
-    right: -11px;
+    right: 21px;
     background-color: var(--main-color);
     width: 20px;
     height: 20px;
@@ -91,12 +98,33 @@ header {
     justify-content: center;
     align-items: center;
     font-weight: 500;
+
 }
 .home {
     position: relative;
     background: #f2f0f1;
-    min-height: 700px;
+    height: 70vh;
 }
+
+/*
+@media screen and (max-width: 400px) {
+    .home {
+        height: 40vh;
+    }
+}
+
+@media screen and (max-width: 560px) {
+    .home {
+        height: 50vh;
+    }
+}
+
+@media screen and (max-width: 760px) {
+    .home {
+        height: 60vh;
+    }
+}*/
+
 .home-img {
     width: 100%;
     position: absolute;
@@ -105,6 +133,7 @@ header {
     transform: translate(-50%);
     display: flex;
     justify-content: center;
+    object-fit: cover;
 }
 .home-img img {
     max-width: 700px;
@@ -112,12 +141,12 @@ header {
 }
 .home-img::before {
     content: "Coloring Style";
-    font-size: 9rem;
+    font-size: clamp(3rem, 10vw, 9rem);
     font-weight: 900;
     position: absolute;
     text-transform: uppercase;
     text-align: center;
-    top: -28px;
+
     color: var(--main-color);
     z-index: -1;
 }
