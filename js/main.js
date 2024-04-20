@@ -118,7 +118,9 @@ function addToCart(event) {
             // Yeni oluşturduğumuz ürünü cart dizisine ekleriz.
             cart.push(cartItem);
 
+
         }
+        event.target.textContent = "Added";
     }
     // toplam miktarı günceller
 
@@ -221,6 +223,16 @@ if (window.location.pathname.includes("cart.html")) {
     renderCartItems();
     calculateCartTotal();
     updateCartIcon()
+
+    const clearBtn = document.getElementById("clear-shopping");
+
+    clearBtn.addEventListener("click", () => {
+        localStorage.clear();
+        renderCartItems();
+        calculateCartTotal();
+        updateCartIcon();
+        window.location.reload();
+    })
 } else {
     // Sayfa index.html sayfasındaysa renderProducts fonksiyonu çalışacak
     renderProducts();
@@ -238,13 +250,7 @@ function updateCartIcon() {
 
 }
 
-document.getElementById("clear-shopping").addEventListener("click", () => {
-    localStorage.clear();
-    renderCartItems();
-    calculateCartTotal();
-    updateCartIcon();
-    window.location.reload();
-})
+
 
 
 
